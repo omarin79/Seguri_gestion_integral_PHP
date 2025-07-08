@@ -1,0 +1,260 @@
+
+:root {
+    --color-institucional-primario: #003366; /* Azul oscuro */
+    --color-institucional-secundario: #f0f0f0; /* Gris claro */
+    --color-institucional-texto-header: #ffffff; /* Texto blanco para header */
+    --color-institucional-texto-footer: #333333; /* Texto oscuro para footer */
+    --color-enlaces: #0056b3; /* Azul medio para enlaces */
+    --watermark-opacity: 0.1; /* Opacidad de la marca de agua */
+}
+
+
+body {
+    font-family: 'Roboto', sans-serif; /* Usa Roboto como fuente principal */
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-institucional-secundario);
+    color: #444; /* Un negro más suave que cansa menos la vista */
+    font-size: 16px; /* Tamaño de letra base más legible */
+    line-height: 1.6; /* Espacio entre líneas para mayor comodidad de lectura */
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('../images/logo_central.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 80vw auto;
+    opacity: var(--watermark-opacity);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* --- ENCABEZADO FIJO --- */
+header.main-header {
+    background-color: var(--color-institucional-primario);
+    padding: 5px 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: 60px;
+}
+
+.logo-container {}
+
+#header-logo {
+    height: 50px;
+    width: auto;
+    vertical-align: middle;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+/* --- NAVEGACIÓN EN EL ENCABEZADO --- */
+header nav.main-nav {
+    margin-right: 25px;
+}
+
+header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+header nav ul li {
+    display: inline-block;
+    margin-left: 15px;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: var(--color-institucional-texto-header);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+header nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* --- FOTO DE PERFIL CIRCULAR Y NOMBRE DE USUARIO --- */
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%; /* ¡La regla para el círculo! */
+    object-fit: cover; /* Evita que la imagen se deforme */
+    margin-right: 10px;
+    border: 2px solid #ffffff; /* Borde blanco para resaltar */
+}
+
+.user-info span {
+    color: var(--color-institucional-texto-header);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* --- CONTENIDO PRINCIPAL Y PIE DE PÁGINA --- */
+#content-wrapper {
+    padding-top: 70px;
+    padding-bottom: 70px;
+    overflow-y: auto;
+    height: calc(100vh - 140px);
+    box-sizing: border-box;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--color-institucional-secundario);
+    color: var(--color-institucional-texto-footer);
+    border-top: 1px solid #ccc;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 100;
+    height: 60px;
+}
+
+/* --- ESTILOS DE PÁGINAS Y SECCIONES --- */
+.page-content {
+    padding: 0 20px;
+}
+
+section {
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 8px;
+    max-width: 800px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    border: 1px solid #ddd;
+    background-color: #fff;
+    text-align: left;
+}
+
+section h1, section h2 {
+    font-weight: 700;
+    border-bottom: 2px solid var(--color-institucional-primario);
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--color-institucional-primario);
+}
+
+section h2 {
+    font-size: 1.5em;
+}
+
+section p, section li, label {
+    font-weight: 400;
+}
+
+/* --- ESTILOS DE FORMULARIOS --- */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    min-height: calc(100vh - 180px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+label { 
+    display: block; 
+    margin-top: 15px; 
+    margin-bottom: 5px;
+    text-align: left; 
+    font-weight: 500;
+    color: #333;
+}
+
+input[type="text"], 
+input[type="password"], 
+input[type="date"], 
+input[type="time"], 
+input[type="tel"],
+input[type="email"],
+input[type="file"],
+select, 
+textarea {
+    width: 100%; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+button {
+    background-color: var(--color-enlaces); 
+    color: white; 
+    padding: 10px 15px;
+    border: none; 
+    cursor: pointer; 
+    margin-top: 20px;
+    width: 100%;
+    font-size: 1em;
+    border-radius: 4px;
+}
+button:hover { 
+    background-color: #004494; 
+}
+
+/* --- MENSAJES Y OTROS --- */
+.error-message {
+    background-color: #f8d7da; 
+    color: #721c24; 
+    border: 1px solid #f5c6cb;
+    padding: 10px; 
+    margin-bottom: 15px; 
+    border-radius: 4px;
+}
+
+.success-message {
+    background-color: #d4edda; 
+    color: #155724; 
+    border: 1px solid #c3e6cb;
+    padding: 10px; 
+    margin-bottom: 15px; 
+    border-radius: 4px;
+}
+
+/* --- ESTILOS PARA AUTOCOMPLETAR --- */
+.autocomplete-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ddd;
+    border-top: none;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    background-color: #fff;
+}
+
+.autocomplete-suggestion {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.autocomplete-suggestion:hover {
+    background-color: #f0f0f0;
+}
