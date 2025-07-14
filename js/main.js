@@ -1,4 +1,4 @@
-// C:\xampp\htdocs\securigestion\js\main.js (Versión Final con Formularios Completos)
+// C:\xampp\htdocs\securigestion\js\main.js (Versión Final con Formularios Completos Restaurados)
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tipoNovedadSelect = document.getElementById('tipo-novedad-registro');
     const formContainer = document.getElementById('novedad-form-container');
 
-    // Este objeto ahora contiene el HTML completo y detallado de tus formularios originales.
+    // Este objeto ahora contiene el HTML completo y detallado de TODOS tus formularios originales.
     const formsHtml = {
         'ausencia': `
             <form id="form-registro-ausencia" action="actions/novedad_action.php" method="POST" enctype="multipart/form-data">
@@ -192,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
             inputCedula.addEventListener('input', async () => {
                 const term = inputCedula.value;
                 resultsContainer.innerHTML = '';
-                
                 if (term.length < 2) return;
 
                 try {

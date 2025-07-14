@@ -1,13 +1,23 @@
+<?php
+// C:\xampp\htdocs\securigestion\pages\registro.php
+
+// Este pequeño script se conecta a la BD para obtener los roles
+// La variable $pdo ya está disponible gracias al index.php
+try {
+    $stmt = $pdo->query("SELECT ID_Rol, NombreRol FROM Roles ORDER BY NombreRol");
+    $roles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // En caso de error, la lista de roles estará vacía
+    $roles = [];
+}
+?>
+
 <div id="registro-page" class="page-content active">
     <div class="login-container">
         <img src="images/logo_jh.png" alt="Logo SecuriGestiónIntegral" class="logo">
         <h1>Registro de Nuevo Usuario</h1>
-
+        
         <form id="registro-form" action="actions/registro_action.php" method="POST">
-            <?php if (isset($_GET['error'])): ?>
-                <div class="error-message" style="display:block;"><?php echo htmlspecialchars($_GET['error']); ?></div>
-            <?php endif; ?>
-
             <label for="nombre">Nombre:</label>
             <input type="text" id="nombre" name="nombre" required>
 
@@ -19,15 +29,16 @@
 
             <label for="email-registro">Correo Electrónico:</label>
             <input type="email" id="email-registro" name="email" required>
-
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono">
-
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion">
-
-            <label for="fecha_contratacion">Fecha de Contratación:</label>
-            <input type="date" id="fecha_contratacion" name="fecha_contratacion" required>
+            
+            <label for="id_rol">Rol del Usuario:</label>
+            <select id="id_rol" name="id_rol" required>
+                <option value="">-- Seleccione un Rol --</option>
+                <?php foreach ($roles as $rol): ?>
+                    <option value="<?php echo htmlspecialchars($rol['ID_Rol']); ?>">
+                        <?php echo htmlspecialchars($rol['NombreRol']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
             <label for="password-registro">Contraseña:</label>
             <input type="password" id="password-registro" name="password" required>
 

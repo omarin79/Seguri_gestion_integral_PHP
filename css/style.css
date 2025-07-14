@@ -1,4 +1,9 @@
+/* =================================================================== */
+/* HOJA DE ESTILOS COMPLETA Y DEFINITIVA                   */
+/* PARA SECURIGESTIÓN INTEGRAL                      */
+/* =================================================================== */
 
+/* --- COLORES INSTITUCIONALES Y VARIABLES --- */
 :root {
     --color-institucional-primario: #003366; /* Azul oscuro */
     --color-institucional-secundario: #f0f0f0; /* Gris claro */
@@ -8,15 +13,15 @@
     --watermark-opacity: 0.1; /* Opacidad de la marca de agua */
 }
 
-
+/* --- ESTILOS GENERALES Y TIPOGRAFÍA MEJORADA --- */
 body {
-    font-family: 'Roboto', sans-serif; /* Usa Roboto como fuente principal */
+    font-family: 'Roboto', sans-serif; /* Fuente principal moderna */
     margin: 0;
     padding: 0;
     background-color: var(--color-institucional-secundario);
-    color: #444; /* Un negro más suave que cansa menos la vista */
-    font-size: 16px; /* Tamaño de letra base más legible */
-    line-height: 1.6; /* Espacio entre líneas para mayor comodidad de lectura */
+    color: #444; /* Negro más suave para reducir fatiga visual */
+    font-size: 16px;
+    line-height: 1.6; /* Espaciado de línea para mejor legibilidad */
 }
 
 body::before {
@@ -32,11 +37,10 @@ body::before {
     pointer-events: none;
 }
 
-/* --- ENCABEZADO FIJO --- */
+/* --- ESTRUCTURA PRINCIPAL (HEADER, CONTENT, FOOTER) --- */
 header.main-header {
     background-color: var(--color-institucional-primario);
     padding: 5px 20px;
-    border-bottom: 1px solid #dee2e6;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -46,68 +50,6 @@ header.main-header {
     height: 60px;
 }
 
-.logo-container {}
-
-#header-logo {
-    height: 50px;
-    width: auto;
-    vertical-align: middle;
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-}
-
-/* --- NAVEGACIÓN EN EL ENCABEZADO --- */
-header nav.main-nav {
-    margin-right: 25px;
-}
-
-header nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-header nav ul li {
-    display: inline-block;
-    margin-left: 15px;
-}
-
-header nav ul li a {
-    text-decoration: none;
-    color: var(--color-institucional-texto-header);
-    font-weight: bold;
-    cursor: pointer;
-}
-
-header nav ul li a:hover {
-    text-decoration: underline;
-}
-
-/* --- FOTO DE PERFIL CIRCULAR Y NOMBRE DE USUARIO --- */
-.user-info {
-    display: flex;
-    align-items: center;
-}
-
-.user-info img {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%; /* ¡La regla para el círculo! */
-    object-fit: cover; /* Evita que la imagen se deforme */
-    margin-right: 10px;
-    border: 2px solid #ffffff; /* Borde blanco para resaltar */
-}
-
-.user-info span {
-    color: var(--color-institucional-texto-header);
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-/* --- CONTENIDO PRINCIPAL Y PIE DE PÁGINA --- */
 #content-wrapper {
     padding-top: 70px;
     padding-bottom: 70px;
@@ -128,7 +70,59 @@ footer {
     height: 60px;
 }
 
-/* --- ESTILOS DE PÁGINAS Y SECCIONES --- */
+/* --- ENCABEZADO Y NAVEGACIÓN --- */
+#header-logo {
+    height: 50px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+header nav.main-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 25px 0 0;
+}
+
+header nav ul li {
+    display: inline-block;
+    margin-left: 15px;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: var(--color-institucional-texto-header);
+    font-weight: bold;
+}
+
+header nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* --- FOTO DE PERFIL CIRCULAR Y NOMBRE --- */
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-info img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%; /* Regla para hacer la imagen circular */
+    object-fit: cover;   /* Evita que la imagen se deforme */
+    border: 2px solid #fff;
+    margin-right: 10px;
+}
+
+.user-info span {
+    color: var(--color-institucional-texto-header);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* --- ESTILOS DE PÁGINAS Y FORMULARIOS --- */
 .page-content {
     padding: 0 20px;
 }
@@ -141,11 +135,10 @@ section {
     box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     border: 1px solid #ddd;
     background-color: #fff;
-    text-align: left;
 }
 
 section h1, section h2 {
-    font-weight: 700;
+    font-weight: 700; /* Títulos más gruesos */
     border-bottom: 2px solid var(--color-institucional-primario);
     padding-bottom: 8px;
     margin-top: 0;
@@ -157,85 +150,99 @@ section h2 {
     font-size: 1.5em;
 }
 
-section p, section li, label {
-    font-weight: 400;
-}
-
-/* --- ESTILOS DE FORMULARIOS --- */
-.login-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-    text-align: center;
-    min-height: calc(100vh - 180px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-label { 
-    display: block; 
-    margin-top: 15px; 
+label {
+    display: block;
+    margin-top: 15px;
     margin-bottom: 5px;
-    text-align: left; 
     font-weight: 500;
     color: #333;
 }
 
-input[type="text"], 
-input[type="password"], 
-input[type="date"], 
-input[type="time"], 
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="time"],
 input[type="tel"],
 input[type="email"],
 input[type="file"],
-select, 
+select,
 textarea {
-    width: 100%; 
-    padding: 10px; 
-    border: 1px solid #ccc; 
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
     box-sizing: border-box;
     border-radius: 4px;
 }
 
 button {
-    background-color: var(--color-enlaces); 
-    color: white; 
+    background-color: var(--color-enlaces);
+    color: white;
     padding: 10px 15px;
-    border: none; 
-    cursor: pointer; 
+    border: none;
+    cursor: pointer;
     margin-top: 20px;
     width: 100%;
     font-size: 1em;
     border-radius: 4px;
 }
-button:hover { 
-    background-color: #004494; 
+
+button:hover {
+    background-color: #004494;
 }
 
-/* --- MENSAJES Y OTROS --- */
+fieldset {
+    margin-top: 15px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+legend {
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+/* --- CONTENEDORES DE LOGIN/REGISTRO RESPONSIVOS --- */
+.login-container {
+    width: 90%; /* Ancho para móviles */
+    max-width: 400px; /* Ancho máximo para móviles */
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    border-radius: 8px;
+}
+
+/* Estilos para pantallas más grandes (tablets y PC) */
+@media (min-width: 768px) {
+    .login-container {
+        max-width: 480px; /* Un poco más grande en PC */
+        padding: 40px;
+    }
+}
+
+/* --- MENSAJES DE ERROR Y ÉXITO --- */
 .error-message {
-    background-color: #f8d7da; 
-    color: #721c24; 
+    background-color: #f8d7da;
+    color: #721c24;
     border: 1px solid #f5c6cb;
-    padding: 10px; 
-    margin-bottom: 15px; 
+    padding: 10px;
+    margin-bottom: 15px;
     border-radius: 4px;
 }
 
 .success-message {
-    background-color: #d4edda; 
-    color: #155724; 
+    background-color: #d4edda;
+    color: #155724;
     border: 1px solid #c3e6cb;
-    padding: 10px; 
-    margin-bottom: 15px; 
+    padding: 10px;
+    margin-bottom: 15px;
     border-radius: 4px;
 }
 
-/* --- ESTILOS PARA AUTOCOMPLETAR --- */
+/* --- ESTILOS PARA LA LISTA DE AUTOCOMPLETAR --- */
 .autocomplete-results {
     position: absolute;
     top: 100%;
