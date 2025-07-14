@@ -1,10 +1,9 @@
 <?php
-// C:\xampp\htdocs\securigestion\Seguri_gestion_integral_PHP\actions\novedad_action.php
+// C:\xampp\htdocs\securigestion\actions\novedad_action.php
 
 session_start();
-// Usamos dirname(__DIR__) para asegurar que la ruta sea siempre correcta
-require_once dirname(__DIR__) . '/includes/db.php';
-require_once dirname(__DIR__) . '/includes/functions.php';
+require_once '../includes/db.php';
+require_once '../includes/functions.php';
 
 // 1. Verificar que el usuario haya iniciado sesión
 if (!is_logged_in()) {
@@ -17,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 3. Recoger datos del formulario
     $id_usuario_reporta = $_SESSION['user_id'];
-    $tipo_novedad_slug = $_POST['tipo_novedad'] ?? ''; // ej: 'incapacidad'
+    $tipo_novedad_slug = $_POST['tipo_novedad'] ?? '';
     $descripcion_novedad = $_POST['observaciones'] ?? $_POST['diagnostico'] ?? $_POST['motivo_permiso'] ?? $_POST['circunstancias'] ?? $_POST['descripcion'] ?? 'Sin descripción.';
 
     // 4. Buscar el ID del tipo de novedad en la base de datos
@@ -31,20 +30,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_tipo_novedad = $tipo_novedad_row['ID_TipoNovedad'];
         }
     } catch (PDOException $e) {
-        // Manejar el error si la tabla no existe o la consulta falla
-        header('Location: ../index.php?page=registro-novedades-general&error=' . urlencode('Error de configuración de la base de datos.'));
-        exit();
+        // Manejar error si la consulta falla
     }
 
     if (!$id_tipo_novedad) {
-        header('Location: ../index.php?page=registro-novedades-general&error=' . urlencode('Error: El tipo de novedad seleccionado no es válido.'));
+        header('Location: ../index.php?page=registro-novedades-general&error=' . urlencode('Error: Tipo de novedad no configurado en la BD.'));
         exit();
     }
+    
+    // (Lógica futura para archivos...)
 
     // 5. Guardar la novedad en la base de datos
     try {
-        $sql = "INSERT INTO Novedades (ID_TipoNovedad, ID_Usuario_Reporta, Descripcion, EstadoNovedad, FechaHoraOcurrencia) 
-                VALUES (?, ?, ?, 'Abierta', NOW())";
+        $sql = "INSERT INTO Novedades (ID_TipoNovedad, ID_Usuario_Reporta, Descripcion, EstadoNovedad) 
+                VALUES (?, ?, ?, 'Abierta')";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -62,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 } else {
-    // Si se intenta acceder al archivo directamente, redirigir
+    // Si no es POST, redirigir
     header('Location: ../index.php');
     exit();
 }
