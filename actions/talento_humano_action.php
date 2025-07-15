@@ -4,7 +4,7 @@
 session_start();
 require_once dirname(__DIR__) . '/includes/db.php';
 require_once dirname(__DIR__) . '/includes/functions.php';
-require_once dirname(__DIR__) . '/libs/GeneradorCarta.php'; // Incluimos la nueva librería
+require_once dirname(__DIR__) . '/libs/GeneradorCarta.php';
 
 if (!is_logged_in()) {
     header('Location: ../index.php?page=login');
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $empleado = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($empleado) {
-                // Datos para la carta (salario simulado)
+                // Datos para la carta (salario y fecha simulados para el ejemplo)
                 $salario_simulado = 1800000;
                 $fecha_contratacion_simulada = $empleado['FechaContratacion'] ?? '2023-01-15';
 
@@ -57,7 +57,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die("Error al generar el PDF: " . $e->getMessage());
         }
     }
-    
-    // Aquí puedes añadir la lógica para "Consultar Documentos"
 }
 ?>

@@ -1,66 +1,123 @@
 <?php
-// C:\xampp\htdocs\securigestion\actions\registro_action.php
+// Habilitar la visualización de errores para encontrar cualquier problema
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-require_once '../includes/db.php';
+session_start();
+require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/functions.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Recoger los datos, incluyendo el nuevo campo 'id_rol'
-    $nombre = trim($_POST['nombre']);
-    $apellido = trim($_POST['apellido']);
-    $documento = trim($_POST['documento']);
-    $email = trim($_POST['email']);
-    $id_rol = $_POST['id_rol']; // <--- DATO NUEVO
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ../index.php');
+    exit();
+}
 
-    // Validar que se haya seleccionado un rol
-    if (empty($id_rol)) {
-        header('Location: ../index.php?page=registro&error=Por favor, seleccione un rol para el usuario.');
-        exit();
+// 1. Recoger todos los datos del formulario, incluyendo la fecha
+$nombre = trim($_POST['nombre'] ?? '');
+$apellido = trim($_POST['apellido'] ?? '');
+$documento = trim($_POST['documento'] ?? '');
+$telefono = trim($_POST['telefono'] ?? null);
+$direccion = trim($_POST['direccion'] ?? null);
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
+$password_confirm = $_POST['password_confirm'] ?? '';
+$id_rol = $_POST['id_rol'] ?? '';
+$fecha_contratacion = $_POST['fecha_contratacion'] ?? null;
+
+// Validar que los campos obligatorios no estén vacíos
+if (empty($nombre) || empty($apellido) || empty($documento) || empty($email) || empty($password) || empty($id_rol)) {
+    header('Location: ../index.php?page=registro&status=error&message=' . urlencode('Por favor, complete todos los campos obligatorios.'));
+    exit();
+}
+
+// Verificar que las contraseñas coincidan
+if ($password !== $password_confirm) {
+    header('Location: ../index.php?page=registro&status=error&message=' . urlencode('Las contraseñas no coinciden.'));
+    exit();
+}
+
+// Hashear la contraseña de forma segura
+$password_hashed = password_hash($password, PASSWORD_BCRYPT);
+
+// Manejar la subida de la foto de perfil
+$foto_ruta_relativa = null;
+if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
+    $upload_dir_absoluta = dirname(__DIR__) . '/uploads/perfiles/';
+    if (!is_dir($upload_dir_absoluta)) {
+        mkdir($upload_dir_absoluta, 0775, true);
     }
     
-    // ... resto de validaciones ...
-    if ($password !== $confirm_password) {
-        header('Location: ../index.php?page=registro&error=Las contraseñas no coinciden.');
+    $file_extension = strtolower(pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION));
+    $foto_nombre = 'perfil_' . $documento . '_' . time() . '.' . $file_extension;
+    $ruta_absoluta_destino = $upload_dir_absoluta . $foto_nombre;
+    $foto_ruta_relativa = 'uploads/perfiles/' . $foto_nombre;
+
+    if (!move_uploaded_file($_FILES['foto_perfil']['tmp_name'], $ruta_absoluta_destino)) {
+        header('Location: ../index.php?page=registro&status=error&message=' . urlencode('Error al subir la foto de perfil.'));
         exit();
     }
+}
 
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+// Iniciar transacción para asegurar la integridad de los datos
+$pdo->beginTransaction();
 
-    try {
-        $pdo->beginTransaction();
+try {
+    // Insertar el nuevo usuario en la tabla `Usuarios`, incluyendo la fecha
+    $stmt_usuario = $pdo->prepare("
+        INSERT INTO Usuarios 
+        (Nombre, Apellido, DocumentoIdentidad, CorreoElectronico, ContrasenaHash, Telefono, Direccion, FechaContratacion, ID_Rol, FotoPerfilRuta)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+    $stmt_usuario->execute([
+        $nombre,
+        $apellido,
+        $documento,
+        $email,
+        $password_hashed,
+        $telefono,
+        $direccion,
+        $fecha_contratacion,
+        $id_rol,
+        $foto_ruta_relativa
+    ]);
 
-        // Se usa la variable $id_rol en lugar de un valor fijo
-        $stmt_usuarios = $pdo->prepare(
-            "INSERT INTO Usuarios (Nombre, Apellido, DocumentoIdentidad, CorreoElectronico, ContrasenaHash, ID_Rol) 
-             VALUES (?, ?, ?, ?, ?, ?)"
-        );
-        $stmt_usuarios->execute([$nombre, $apellido, $documento, $email, $hashed_password, $id_rol]);
-        
-        // Sincronización con la tabla de autocompletar
-        $nombre_completo = $apellido . ' ' . $nombre;
-        // (Podrías obtener el nombre del rol con otra consulta si lo necesitas)
-        $cargo = 'ROL_ID_' . $id_rol; 
+    // Sincronizar con la tabla `personal_autocompletar`
+    $stmt_rol_nombre = $pdo->prepare("SELECT NombreRol FROM Roles WHERE ID_Rol = ?");
+    $stmt_rol_nombre->execute([$id_rol]);
+    $rol_info = $stmt_rol_nombre->fetch(PDO::FETCH_ASSOC);
+    $cargo = $rol_info ? $rol_info['NombreRol'] : 'No definido';
 
-        $stmt_autocompletar = $pdo->prepare(
-            "INSERT INTO personal_autocompletar (nombre_completo, documento, email, cargo) 
-             VALUES (?, ?, ?, ?)"
-        );
-        $stmt_autocompletar->execute([$nombre_completo, $documento, $email, $cargo]);
-        
-        $pdo->commit();
-        
-        header('Location: ../index.php?page=login&success=Registro exitoso. Ahora puedes iniciar sesión.');
-        exit();
+    $stmt_autocompletar = $pdo->prepare("
+        INSERT INTO personal_autocompletar (nombre_completo, documento, email, cargo)
+        VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE nombre_completo = VALUES(nombre_completo), email = VALUES(email), cargo = VALUES(cargo)
+    ");
+    $stmt_autocompletar->execute([
+        $nombre . ' ' . $apellido,
+        $documento,
+        $email,
+        $cargo
+    ]);
 
-    } catch (PDOException $e) {
-        $pdo->rollBack();
-        if ($e->getCode() == 23000) {
-            header('Location: ../index.php?page=registro&error=El documento o correo ya están registrados.');
-        } else {
-            header('Location: ../index.php?page=registro&error=Error en el registro.');
-        }
-        exit();
+    // Si todo fue exitoso, confirmar la transacción
+    $pdo->commit();
+
+    // --- ▼▼ ÚNICO CAMBIO REALIZADO ▼▼ ---
+    // Redirige a la PÁGINA DE LOGIN con un mensaje de éxito.
+    header('Location: ../index.php?page=login&success=' . urlencode('¡Registro exitoso! Ya puedes iniciar sesión.'));
+    exit();
+
+} catch (PDOException $e) {
+    // Si algo falla, revertir todo y mostrar un error
+    $pdo->rollBack();
+
+    if ($e->errorInfo[1] == 1062) {
+        $message = 'El documento o el correo ya están registrados.';
+    } else {
+        $message = 'Error al registrar el usuario: ' . $e->getMessage();
     }
+    header('Location: ../index.php?page=registro&status=error&message=' . urlencode($message));
+    exit();
 }
 ?>

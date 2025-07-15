@@ -26,6 +26,12 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (isset($_GET['success'])): ?>
+                <div class="success-message" style="display: block;">
+                    <?= htmlspecialchars($_GET['success']) ?>
+                </div>
+            <?php endif; ?>
+
             <label for="username">Nombre de usuario (Cédula):</label>
             <input type="text" id="username" name="username" required>
 

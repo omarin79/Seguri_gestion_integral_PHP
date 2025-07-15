@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/functions.php';
 $page = $_GET['page'] ?? (is_logged_in() ? 'inicio' : 'login');
 
 // Define las páginas que son públicas (no necesitan login).
-$public_pages = ['login', 'registro', 'olvido-contrasena'];
+$public_pages = ['login', 'registro', 'olvido-contrasena', 'reset-password'];
 
 // Si la página solicitada NO es pública Y el usuario NO ha iniciado sesión,
 // lo redirigimos forzosamente al login.
@@ -34,5 +34,5 @@ if (file_exists($page_file)) {
 }
 
 // Carga el pie de página.
-require_once __DIR__ . '/includes/footer.php';
+require_once __DIR__ . '/includes/footer.php'; // <-- LÍNEA CORREGIDA
 ?>
