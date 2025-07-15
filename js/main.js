@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- LÓGICA DE AUTOCOMPLETAR (REUTILIZABLE) ---
+    // --- LÓGICA DE AUTOCOMPLETAR (FUNCIÓN REUTILIZABLE) ---
     function activarAutocompleteEnNuevosInputs() {
         const autocompleteInputs = document.querySelectorAll('input[data-autocomplete-nombre]');
         
@@ -225,5 +225,215 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Ejecutar al cargar la página por primera vez
     activarAutocompleteEnNuevosInputs();
+
+
+    // --- LÓGICA PARA CONSULTAR DOCUMENTOS GENERADOS ---
+    const formConsulta = document.getElementById('form-consultar-documentos-th');
+    const resultadosContainer = document.getElementById('resultados-documentos');
+
+    if (formConsulta) {
+        formConsulta.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            resultadosContainer.innerHTML = '<p>Buscando documentos...</p>';
+
+            fetch('actions/consulta_documentos_action.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultadosContainer.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                    return;
+                }
+
+                if (data.length === 0) {
+                    resultadosContainer.innerHTML = '<p>No se encontraron documentos para esta cédula.</p>';
+                    return;
+                }
+
+                let tablaHTML = `
+                    <table style="width:100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="border: 1px solid #ddd; padding: 8px;">Tipo de Documento</th>
+                                <th style="border: 1px solid #ddd; padding: 8px;">Fecha de Solicitud</th>
+                                <th style="border: 1px solid #ddd; padding: 8px;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                data.forEach(doc => {
+                    tablaHTML += `
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${doc.NombreDocumento}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${doc.FechaHoraSolicitud}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${doc.EstadoSolicitud}</td>
+                        </tr>
+                    `;
+                });
+
+                tablaHTML += '</tbody></table>';
+                resultadosContainer.innerHTML = tablaHTML;
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                resultadosContainer.innerHTML = '<p style="color: red;">Ocurrió un error al conectar con el servidor.</p>';
+            });
+        });
+    }
+    // --- LÓGICA PARA CONSULTAR ÚLTIMAS NOVEDADES ---
+const btnConsultarNovedades = document.getElementById('btn-consultar-novedades');
+const resultadosNovedadesContainer = document.getElementById('resultados-novedades');
+
+if (btnConsultarNovedades) {
+    btnConsultarNovedades.addEventListener('click', function() {
+
+        resultadosNovedadesContainer.innerHTML = '<p>Buscando novedades...</p>';
+
+        fetch('actions/consulta_novedades_action.php', {
+            method: 'GET' // No necesitamos enviar datos, solo pedir información
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('La respuesta del servidor no fue exitosa.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                resultadosNovedadesContainer.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                return;
+            }
+
+            if (data.length === 0) {
+                resultadosNovedadesContainer.innerHTML = '<p>No se encontraron novedades registradas.</p>';
+                return;
+            }
+
+            // Construimos la tabla con los resultados
+            let tablaHTML = `
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2;">
+                            <th style="border: 1px solid #ddd; padding: 8px;">ID</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Tipo Novedad</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Descripción</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Fecha</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Reporta</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Afectado</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach(novedad => {
+                // Combinamos nombres y apellidos, y manejamos el caso de que no haya un afectado
+                const nombreReporta = `${novedad.NombreReporta} ${novedad.ApellidoReporta}`;
+                const nombreAfectado = novedad.NombreAfectado ? `${novedad.NombreAfectado} ${novedad.ApellidoAfectado}` : 'N/A';
+
+                tablaHTML += `
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${novedad.ID_Novedad}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${novedad.NombreNovedad}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${novedad.Descripcion}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${novedad.FechaHoraRegistro}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${nombreReporta}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${nombreAfectado}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${novedad.EstadoNovedad}</td>
+                    </tr>
+                `;
+            });
+
+            tablaHTML += '</tbody></table>';
+            resultadosNovedadesContainer.innerHTML = tablaHTML;
+        })
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+            resultadosNovedadesContainer.innerHTML = '<p style="color: red;">Ocurrió un error al conectar con el servidor.</p>';
+        });
+    });
+}
+// --- LÓGICA PARA EL MÓDULO DE VISITAS DE SUPERVISIÓN ---
+
+// Función para obtener las coordenadas GPS
+const btnGps = document.getElementById('btn-obtener-gps');
+if (btnGps) {
+    btnGps.addEventListener('click', () => {
+        const latInput = document.getElementById('visita-latitud');
+        const lonInput = document.getElementById('visita-longitud');
+        const statusDiv = document.getElementById('gps-status');
+
+        if (navigator.geolocation) {
+            statusDiv.textContent = 'Obteniendo coordenadas...';
+            navigator.geolocation.getCurrentPosition(position => {
+                latInput.value = position.coords.latitude;
+                lonInput.value = position.coords.longitude;
+                statusDiv.textContent = `Coordenadas obtenidas: Lat ${latInput.value}, Lon ${lonInput.value}`;
+                statusDiv.style.color = 'green';
+            }, error => {
+                statusDiv.textContent = `Error al obtener GPS: ${error.message}`;
+                statusDiv.style.color = 'red';
+            });
+        } else {
+            statusDiv.textContent = 'La geolocalización no es soportada por este navegador.';
+            statusDiv.style.color = 'red';
+        }
+    });
+}
+
+// Función para cargar el checklist dinámicamente
+const checklistSelect = document.getElementById('visita-checklist-tipo');
+if (checklistSelect) {
+    checklistSelect.addEventListener('change', async () => {
+        const checklistId = checklistSelect.value;
+        const container = document.getElementById('checklist-container');
+        container.innerHTML = '<p>Cargando checklist...</p>';
+
+        if (!checklistId) {
+            container.innerHTML = '';
+            return;
+        }
+
+        try {
+            // Suponiendo que tienes un archivo para obtener los items
+            const response = await fetch(`actions/get_checklist_items_action.php?id=${checklistId}`);
+            const items = await response.json();
+
+            if (items.error) {
+                container.innerHTML = `<p style="color:red;">${items.error}</p>`;
+                return;
+            }
+            
+            let html = '';
+            let currentSection = '';
+
+            items.forEach(item => {
+                if(item.Seccion !== currentSection) {
+                    currentSection = item.Seccion;
+                    html += `<h3>${currentSection}</h3>`;
+                }
+                html += `
+                    <div class="checklist-item">
+                        <p>${item.Pregunta}</p>
+                        <input type="radio" name="respuestas[${item.ID_Item}]" value="Si" required> Si
+                        <input type="radio" name="respuestas[${item.ID_Item}]" value="No"> No
+                        <input type="radio" name="respuestas[${item.ID_Item}]" value="NA"> N/A
+                        <br>
+                        <textarea name="observaciones[${item.ID_Item}]" placeholder="Observación (opcional)" rows="2" style="width: 100%; margin-top: 5px;"></textarea>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } catch (error) {
+            container.innerHTML = '<p style="color:red;">Error al cargar los items del checklist.</p>';
+        }
+    });
+}
 });

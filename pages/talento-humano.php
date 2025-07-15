@@ -8,7 +8,7 @@
         <section id="solicitar-carta-laboral">
             <h2>Solicitar Carta Laboral</h2>
             <form id="form-solicitar-carta" action="actions/talento_humano_action.php" method="POST">
-                
+                <input type="hidden" name="action" value="solicitar_carta">
                 <label for="th-cedula-carta">Cédula del Empleado:</label>
                 <input type="text" id="th-cedula-carta" name="cedula_empleado_carta" 
                        data-autocomplete-nombre="th-nombre-carta" 
@@ -31,7 +31,7 @@
 
         <section id="consultar-documentos-th">
             <h2>Consultar Documentos del Empleado</h2>
-            <form id="form-consultar-documentos-th" action="actions/talento_humano_action.php" method="POST">
+            <form id="form-consultar-documentos-th" method="POST">
                 <label for="th-cedula-consulta-docs">Cédula del Empleado:</label>
                  <input type="text" id="th-cedula-consulta-docs" name="cedula_empleado_consulta_docs" 
                        data-autocomplete-nombre="th-nombre-consulta-docs" 
@@ -41,6 +41,9 @@
                 <input type="text" id="th-nombre-consulta-docs" name="nombre_empleado_consulta_docs" readonly placeholder="Se autocompletará">
                 <button type="submit">Consultar Documentos</button>
             </form>
+
+            <div id="resultados-documentos" style="margin-top: 20px;">
+            </div>
         </section>
     </main>
 </div>
