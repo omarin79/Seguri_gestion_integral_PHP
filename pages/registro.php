@@ -10,7 +10,7 @@ try {
 ?>
 
 <div id="registro-page" class="page-content active">
-    <div class="registro-container">
+    <div class="login-container">
         <main>
             <section>
                 <h1>Registro de Nuevo Usuario</h1>
@@ -24,7 +24,7 @@ try {
             <?php endif; ?>
 
             <form id="form-registro-usuario" action="actions/registro_action.php" method="POST" enctype="multipart/form-data">
-                
+
                 <h2>Información Personal</h2>
                 <div class="form-row">
                     <div class="form-group">
