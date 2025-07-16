@@ -1,6 +1,7 @@
 <?php
 // C:\xampp\htdocs\securigestion\libs\GeneradorDesprendible.php
 
+// Mantenemos fpdf.php porque está en el mismo directorio
 require_once('fpdf.php');
 
 class GeneradorDesprendible extends FPDF
@@ -8,8 +9,13 @@ class GeneradorDesprendible extends FPDF
     // Cabecera de página
     function Header()
     {
-        // Logo de la empresa
-        $this->Image('../images/logo_segurigestion.png', 10, 8, 33);
+        // --- ▼▼ LÍNEA CORREGIDA ▼▼ ---
+        // Usamos una ruta absoluta desde la raíz del proyecto para evitar errores
+        $logoPath = dirname(__DIR__) . '/images/logo_segurigestion.png';
+        if (file_exists($logoPath)) {
+            $this->Image($logoPath, 10, 8, 33);
+        }
+
         // Fuente Arial Bold 15
         $this->SetFont('Arial', 'B', 15);
         // Título del documento
