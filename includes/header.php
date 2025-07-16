@@ -27,7 +27,7 @@ $foto_perfil = $_SESSION['user_foto'] ?? 'images/user2-160x160.jpg';
                     <li><a href="index.php?page=plataforma_operativa">Plataforma Operativa</a></li>
                     <li><a href="index.php?page=talento_humano">Talento Humano</a></li>
                     <li><a href="index.php?page=nomina">Nómina</a></li>
-                    <li><a href="index.php?page=registro_visita">Registrar Visita</a></li>
+                    <li><a href="index.php?page=visitas">Registrar Visita</a></li>
                     <li><a href="index.php?page=mi-perfil">Mi Perfil</a></li>
                     <li><a href="actions/logout_action.php">Cerrar Sesión</a></li>
                 </ul>

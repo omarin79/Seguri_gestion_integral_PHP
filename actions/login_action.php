@@ -22,6 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_doc'] = $user['DocumentoIdentidad'];
             // LÍNEA CLAVE: Guarda la ruta de la foto en la sesión
             $_SESSION['user_foto'] = $user['FotoPerfilRuta'];
+            
+            // --- LÍNEA AÑADIDA ---
+            // Se guarda el ID del rol para filtrar los checklists
+            $_SESSION['user_rol_id'] = $user['ID_Rol'];
 
             header('Location: ../index.php?page=inicio');
             exit();

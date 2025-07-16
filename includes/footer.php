@@ -4,5 +4,10 @@
         <p>&copy; <?php echo date('Y'); ?> SecuriGestión Integral</p>
     </footer>
     <?php endif; ?>
-    </div> <script src="js/main.js"></script> </body>
+    </div>
+    
+    <script src="js/main.js"></script>
+    <script src="js/visitas.js"></script>
+    
+    </body>
 </html>

@@ -1,15 +1,35 @@
 <?php
+// C:\xampp\htdocs\securigestion\Seguri_gestion_integral_PHP\pages\visitas.php
+
 // Obtener clientes para el desplegable
 $stmt_clientes = $pdo->query("SELECT ID_Cliente, NombreEmpresa FROM Clientes ORDER BY NombreEmpresa");
 $clientes = $stmt_clientes->fetchAll(PDO::FETCH_ASSOC);
 
-// Obtener tipos de checklist para el desplegable
-$stmt_checklists = $pdo->query("SELECT ID_Checklist, NombreChecklist FROM Checklists WHERE Activo = 1 ORDER BY NombreChecklist");
-$checklists = $stmt_checklists->fetchAll(PDO::FETCH_ASSOC);
+// --- Cargar checklists filtrados por el rol del usuario ---
+$checklists = [];
+try {
+    // Asegúrate de que el ID del rol existe en la sesión
+    if (isset($_SESSION['user_rol_id'])) {
+        $id_rol_usuario = $_SESSION['user_rol_id'];
+        
+        $stmt_checklists = $pdo->prepare(
+            "SELECT c.ID_Checklist, c.NombreChecklist
+             FROM Checklists c
+             JOIN Checklists_Roles cr ON c.ID_Checklist = cr.ID_Checklist
+             WHERE c.Activo = 1 AND cr.ID_Rol = ?"
+        );
+        $stmt_checklists->execute([$id_rol_usuario]);
+        $checklists = $stmt_checklists->fetchAll(PDO::FETCH_ASSOC);
+    }
+} catch (PDOException $e) {
+    // Si hay un error, el desplegable simplemente estará vacío para no detener la página.
+    error_log("Error al cargar checklists por rol: " . $e->getMessage());
+    $checklists = [];
+}
 ?>
 
 <div id="visitas-page" class="page-content active">
-    <main>
+    <main class="registro-container">
         <section>
             <h1>Registro de Visita de Supervisión</h1>
             <p>Complete el siguiente formulario para registrar una nueva visita y su checklist asociado.</p>
@@ -30,23 +50,12 @@ $checklists = $stmt_checklists->fetchAll(PDO::FETCH_ASSOC);
             </select>
 
             <label for="visita-vigilante-cedula">Cédula del Vigilante Auditado:</label>
-            <input type="text" id="visita-vigilante-cedula" name="cedula_auditado" 
-                   data-autocomplete-nombre="visita-vigilante-nombre" 
+            <input type="text" id="visita-vigilante-cedula" name="cedula_auditado"
+                   data-autocomplete-nombre="visita-vigilante-nombre"
                    placeholder="Buscar por cédula..." autocomplete="off" required>
 
             <label for="visita-vigilante-nombre">Nombre del Vigilante:</label>
             <input type="text" id="visita-vigilante-nombre" name="nombre_auditado" readonly>
-
-            <label for="visita-vigilante-telefono">Teléfono Celular:</label>
-            <input type="text" id="visita-vigilante-telefono" name="telefono_auditado" placeholder="Ej: 3001234567">
-
-            <label for="visita-direccion-puesto">Dirección del Puesto:</label>
-            <input type="text" id="visita-direccion-puesto" name="direccion_puesto" placeholder="Dirección del puesto de trabajo">
-
-            <input type="hidden" id="visita-latitud" name="latitud_gps">
-            <input type="hidden" id="visita-longitud" name="longitud_gps">
-            <button type="button" id="btn-obtener-gps">Obtener Coordenadas GPS</button>
-            <div id="gps-status" style="margin-top: 5px;"></div>
 
             <hr>
 
@@ -54,11 +63,15 @@ $checklists = $stmt_checklists->fetchAll(PDO::FETCH_ASSOC);
             <label for="visita-checklist-tipo">Tipo de Checklist a Realizar:</label>
             <select id="visita-checklist-tipo" name="id_checklist" required>
                 <option value="">-- Seleccione un Checklist --</option>
-                <?php foreach ($checklists as $checklist): ?>
-                    <option value="<?= htmlspecialchars($checklist['ID_Checklist']) ?>">
-                        <?= htmlspecialchars($checklist['NombreChecklist']) ?>
-                    </option>
-                <?php endforeach; ?>
+                <?php if (empty($checklists)): ?>
+                    <option value="" disabled>No hay checklists asignados a su rol</option>
+                <?php else: ?>
+                    <?php foreach ($checklists as $checklist): ?>
+                        <option value="<?= htmlspecialchars($checklist['ID_Checklist']) ?>">
+                            <?= htmlspecialchars($checklist['NombreChecklist']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </select>
 
             <div id="checklist-container" style="margin-top: 20px;"></div>
