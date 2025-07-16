@@ -1,38 +1,42 @@
 <?php
-// C:\xampp\htdocs\securigestion\index.php (Versión Definitiva)
+// C:\xampp\htdocs\securigestion\Seguri_gestion_integral_PHP\index.php (Versión Corregida y Estable)
 
-// Inicia la sesión. Esta es la única vez que se debe llamar a session_start().
 session_start();
 
-// Incluye los archivos de funciones y base de datos.
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
 
-// Determina la página a mostrar.
+// 1. Determina la página a mostrar, con valores por defecto seguros.
 $page = $_GET['page'] ?? (is_logged_in() ? 'inicio' : 'login');
 
-// Define las páginas que son públicas (no necesitan login).
-$public_pages = ['login', 'registro', 'olvido-contrasena', 'reset-password'];
+// 2. Define las páginas que son públicas y no necesitan iniciar sesión.
+$public_pages = ['login', 'olvido-contrasena', 'reset-password'];
 
-// Si la página solicitada NO es pública Y el usuario NO ha iniciado sesión,
-// lo redirigimos forzosamente al login.
-if (!in_array($page, $public_pages) && !is_logged_in()) {
+// 3. Lógica de Seguridad:
+// Si la página que se pide NO es pública Y el usuario NO ha iniciado sesión,
+// se le envía forzosamente a la página de login.
+if (!is_logged_in() && !in_array($page, $public_pages)) {
     header('Location: index.php?page=login&error=session_expired');
     exit();
 }
 
-// Carga el encabezado.
-require_once __DIR__ . '/includes/header.php';
-
-// Carga el contenido de la página específica.
-$page_file = __DIR__ . '/pages/' . $page . '.php';
-if (file_exists($page_file)) {
-    include $page_file;
-} else {
-    // Si la página no existe, muestra un error 404.
-    echo '<div class="page-content active" style="text-align:center;"><h1>Error 404: Página no encontrada</h1></div>';
+// 4. Cargar el encabezado solo en las páginas internas (no en el login, etc.).
+if (!in_array($page, $public_pages)) {
+    require_once __DIR__ . '/includes/header.php';
 }
 
-// Carga el pie de página.
-require_once __DIR__ . '/includes/footer.php'; // <-- LÍNEA CORREGIDA
+// 5. Cargar el contenido de la página solicitada usando una estructura limpia.
+$page_path = __DIR__ . '/pages/' . $page . '.php';
+
+if (file_exists($page_path)) {
+    include $page_path;
+} else {
+    // Si el archivo de la página no existe, se muestra un error 404.
+    echo '<div class="page-content active" style="text-align:center;"><h1>Error 404: Página no encontrada</h1><p>La página que buscas no existe o fue movida.</p></div>';
+}
+
+// 6. Cargar el pie de página solo en las páginas internas.
+if (!in_array($page, $public_pages)) {
+    require_once __DIR__ . '/includes/footer.php';
+}
 ?>
